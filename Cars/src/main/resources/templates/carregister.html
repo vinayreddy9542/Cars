@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Add Car</title>
+<link rel="stylesheet" type="text/css"
+	href="/webjars/bootstrap/css/bootstrap.min.css" />
+<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+<script type="text/javascript"
+	src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+<script>
+function setName() {
+    var info = document.getElementById("divText").innerHTML;
+    document.getElementById("name").value = info;
+}
+$(document).ready(function(){
+	var state = document.getElementById("state").value;
+	updatecity();
+});
+function updatecity(){
+	var selected_state = document.getElementById("state").value;
+	var city = document.getElementById("city");
+	var locations = document.getElementById("locations").innerHTML;
+	city.length=0;
+	//console.log(locations);
+	//typecast the locations to map
+	// parse the location
+	var string = locations.substring(1,locations.length-1)
+	var str = string.split("],")
+	var map = new Map()
+	for(let i=0; i<str.length; i++){
+    	var temp = str[i]
+    	var state = temp.split("=")[0]
+    	var dist = temp.split("=")[1]
+    	dist = dist.substring(1,dist.length-1)
+    	const dists = dist.split(", ")
+    	map.set(state.trim(),dists)
+	}
+	
+	//get the cities
+	var cities = map.get(selected_state)
+	console.log(cities)
+	for(let i = 0;i<cities.length;i++){
+		var c = document.createElement("option");
+		c.text = cities[i];
+		c.value = c.text;
+		city.options.add(c);
+		console.log(c)
+	}
+}
+</script>
+<style>
+#divText{
+	display: none;
+}
+#locations{
+	display: none;
+}
+</style>
+</head>
+<body onload="setName()">
+	<div id="divText">[[${#request.userPrincipal.principal.email}]]</div>
+	<div id="locations">[[${loc}]]</div>
+	<div class="container text-center">
+		<div>
+			<h1>Add Car</h1>
+		</div>
+		<form th:action="@{/car_register}" th:object="${car}" method="post"
+			style="max-width: 600px; margin: 0 auto;">
+			<div class="m-3">
+				<!-- email -->
+				<div class="form-group row" id="divText">
+					<label class="col-4 col-form-label">E-mail: </label>
+					<div class="col-8">
+						<input type="email" th:field="*{email}" class="form-control"
+							required id="name" />
+					</div>
+				</div>
+				<!-- brand -->
+				<div class="form-group row">
+					<label class="col-4 col-form-label">Brand: </label>
+					<div class="col-8">
+						<select th:field="*{brand}" class="form-control">
+							<option value="audi">Audi</option>
+							<option value="bmw">BMW</option>
+							<option value="tata">Tata</option>
+						</select>
+					</div>
+				</div>
+				<!-- modal -->
+				<div class="form-group row">
+					<label class="col-4 col-form-label">Model: </label>
+					<div class="col-8">
+						<select th:field="*{modal}" class="form-control">
+							<option value="a6">A6</option>
+							<option value="520d">520d</option>
+							<option value="nexon">Nexon</option>
+						</select>
+					</div>
+				</div>
+				<!-- state -->
+				<div class="form-group row">
+					<label class="col-4 col-form-label">State: </label>
+					<div class="col-8">
+						<select th:field="*{state}" class="form-control" id ="state" onchange="updatecity()">
+						<option th:each="state : ${loc}" th:value="${state.getKey()}" th:text="${state.getKey()}" />
+						</select>
+					</div>
+				</div>
+				<!-- city -->
+				<div class="form-group row">
+					<label class="col-4 col-form-label">District: </label>
+					<div class="col-8">
+						<select th:field="*{city}" class="form-control" id ="city">
+							<!-- set on java script -->
+							
+						</select>
+					</div>
+				</div>
+				<!-- registernumber -->
+				<div class="form-group row">
+					<label class="col-4 col-form-label">Veichle Number: </label>
+					<div class="col-8">
+						<input type="text" th:field="*{registernumber}"
+							class="form-control" required placeholder="Veichle number" />
+					</div>
+				</div>
+				<!-- fuel -->
+				<div class="form-group row">
+					<label class="col-4 col-form-label">Fuel: </label>
+					<div class="col-8">
+						<select th:field="*{fuel}" class="form-control">
+							<option value="petrol">Petrol</option>
+							<option value="diesel">Diesel</option>
+							<option value="electric">Electric</option>
+							<option value="cng">CNG</option>
+						</select>
+					</div>
+				</div>
+				<!-- transmission -->
+				<div class="form-group row">
+					<label class="col-4 col-form-label">Transmission: </label>
+					<div class="col-8">
+						<select th:field="*{transmission}" class="form-control">
+							<option value="manual">Manual</option>
+							<option value="automatic">Automatic</option>
+							<option value="imt">iMt</option>
+						</select>
+					</div>
+				</div>
+				<!-- price -->
+				<div class="form-group row">
+					<label class="col-4 col-form-label">Price: </label>
+					<div class="col-8">
+						<input type="number" th:field="*{price}" class="form-control"
+							required placeholder="Price" />
+					</div>
+				</div>
+				<!-- mileage -->
+				<div class="form-group row">
+					<label class="col-4 col-form-label">Mileage: </label>
+					<div class="col-8">
+						<input type="number" th:field="*{mileage}" class="form-control"
+							required placeholder="Mileage" />
+					</div>
+				</div>
+				<!-- years -->
+				<div class="form-group row">
+					<label class="col-4 col-form-label">Years: </label>
+					<div class="col-8">
+						<input type="number" th:field="*{years}" class="form-control"
+							required placeholder="Price" />
+					</div>
+				</div>
+				<!-- seats -->
+				<div class="form-group row">
+					<label class="col-4 col-form-label">Number of seats: </label>
+					<div class="col-8">
+						<input type="number" th:field="*{seats}" class="form-control"
+							required placeholder="Seats" />
+					</div>
+				</div>
+				<!-- bodytype -->
+				<div class="form-group row">
+					<label class="col-4 col-form-label">Body type: </label>
+					<div class="col-8">
+						<select th:field="*{bodytype}" class="form-control">
+							<option value="sedan">Sedan</option>
+							<option value="SUV">SUV</option>
+							<option value="sport">Sport</option>
+							<option value="hatchback">HatchBack</option>
+							<option value="crossover">Crossover</option>
+						</select>
+					</div>
+				</div>
+				<!-- kmdriven -->
+				<div class="form-group row">
+					<label class="col-4 col-form-label">KM driven: </label>
+					<div class="col-8">
+						<input type="number" th:field="*{kmdriven}" class="form-control"
+							required placeholder="KM driven" />
+					</div>
+				</div>
+				<!-- ownertype -->
+				<div class="form-group row">
+					<label class="col-4 col-form-label">Owner type: </label>
+					<div class="col-8">
+						<select th:field="*{ownertype}" class="form-control">
+							<option value="first">First</option>
+							<option value="second">Second</option>
+							<option value="dealer">Dealer</option>
+							<option value="other">Other</option>
+						</select>
+					</div>
+				</div>
+				<!-- color -->
+				<div class="form-group row">
+					<label class="col-4 col-form-label">Color: </label>
+					<div class="col-8">
+						<select th:field="*{color}" class="form-control">
+							<option value="white">White</option>
+							<option value="silver">Silver</option>
+							<option value="red">Red</option>
+							<option value="blue">Blue</option>
+							<option value="orange">Orange</option>
+							<option value="black">Black</option>
+							<option value="other">Other</option>
+						</select>
+					</div>
+				</div>
+				<div>
+					<button type="submit" class="btn btn-primary">Submit</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</body>
+</html>
